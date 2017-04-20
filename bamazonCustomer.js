@@ -1,20 +1,14 @@
 var inquirer = require("inquirer");
-var mysql = require("mysql");
-var CONFIG = require("./config");
 
-var connection = mysql.createConnection(CONFIG.mySQL);
+exports.runInterface = function() {
+  connection.query("SELECT * FROM products", function(err, res) {
+    if (err) throw err;
+    displayProducts(res);
+    console.log("==============================================");
+    runPrompt(res);
 
-connection.connect(function(err) {
-  if (err) throw err;
-});
-
-connection.query("SELECT * FROM products", function(err, res) {
-  if (err) throw err;
-  displayProducts(res);
-  console.log("==============================================");
-  runCustomerPrompt(res);
-
-});
+  });
+}
 
 
 function displayProducts(arr) {
@@ -28,7 +22,7 @@ function displayProducts(arr) {
   });
 }
 
-function runCustomerPrompt(arr) {
+function runPrompt(arr) {
   inquirer.prompt([
     {
       name: "item_id",
