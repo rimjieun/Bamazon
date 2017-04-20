@@ -17,3 +17,5 @@ VALUES ("Apple", "Produce", 1.00, 50), ("Banana", "Produce", 0.85, 50),
 ("Earrings", "Jewelry", 8.99, 50), ("Foodball", "Sports", 6.99, 50),
 ("Gouda Cheese", "Dairy", 12.99, 50), ("Hershey's Kisses", "Candy", 0.20, 50),
 ("Ice Cream", "Dessert", 4.99, 40), ("Jalapeno", "Produce", 0.50, 50);
+
+SELECT * FROM products;
