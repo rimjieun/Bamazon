@@ -1,6 +1,7 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 var Config = require("./config");
+require("console.table");
 
 var connection = mysql.createConnection(Config.BAMAZON);
 
@@ -10,14 +11,17 @@ connection.connect(function(err) {
 
 
 function viewProductsForSale(arr) {
-  arr.forEach(function(item) {
-    console.log("==============================================");
-    console.log("Item ID: " + item.item_id);
-    console.log("Name: " + item.product_name);
-    console.log("Price: $" + item.price.toFixed(2));
-    console.log("In stock: " + item.stock_quantity + " unit(s)");
+  var itemsArr = [];
+  arr.forEach(function(i) {
+    var item = {
+      ID: i.item_id,
+      Name: i.product_name,
+      Price: i.price.toFixed(2),
+      "In stock": i.stock_quantity + " unit(s)"
+    };
+    itemsArr.push(item);
   });
-  console.log("==============================================");
+  console.table(itemsArr);
   process.exit();
 }
 
@@ -26,14 +30,17 @@ function viewLowInventory(arr) {
     console.log("No items are low on inventory.");
     process.exit();
   }
-  arr.forEach(function(item) {
-    console.log("==============================================");
-    console.log("Item ID: " + item.item_id);
-    console.log("Name: " + item.product_name);
-    console.log("Price: $" + item.price.toFixed(2));
-    console.log("In stock: " + item.stock_quantity + " units");
+  var itemsArr = [];
+  arr.forEach(function(i) {
+    var item = {
+      ID: i.item_id,
+      Name: i.product_name,
+      Price: i.price.toFixed(2),
+      "In stock": i.stock_quantity + " unit(s)"
+    };
+    itemsArr.push(item);
   });
-  console.log("==============================================");
+  console.table(itemsArr);
   process.exit();
 }
 

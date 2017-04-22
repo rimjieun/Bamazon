@@ -1,6 +1,7 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 var Config = require("./config");
+require("console.table");
 
 var connection = mysql.createConnection(Config.BAMAZON);
 
@@ -9,12 +10,17 @@ connection.connect(function(err) {
 });
 
 function displayProducts(arr) {
-  arr.forEach(function(item) {
-    console.log("==============================================");
-    console.log("Item ID: " + item.item_id);
-    console.log("Name: " + item.product_name);
-    console.log("Price: $" + item.price.toFixed(2));
+  var itemsArr = [];
+  arr.forEach(function(i) {
+    var item = {
+      ID: i.item_id,
+      Name: i.product_name,
+      Price: i.price.toFixed(2)
+    };
+
+    itemsArr.push(item);
   });
+  console.table(itemsArr);
 }
 
 function runItemOrder(arr) {
