@@ -1,6 +1,7 @@
 var inquirer = require("inquirer");
 var Customer = require("./bamazonCustomer");
 var Manager = require("./bamazonManager");
+var Supervisor = require("./bamazonSupervisor")
 
 
 inquirer.prompt([
@@ -19,6 +20,7 @@ inquirer.prompt([
       Manager.runApplication();
       break;
     case "Supervisor":
-      //superviosr stuff
+      Supervisor.runApplication();
+      break;
   }
 });

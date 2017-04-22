@@ -9,7 +9,6 @@ connection.connect(function(err) {
   if (err) throw err;
 });
 
-
 function viewProductsForSale(arr) {
   var itemsArr = [];
   arr.forEach(function(i) {
@@ -113,8 +112,7 @@ function addNewProduct(arr) {
             department_name: user.item_department,
             price: user.item_price
           }
-        ],
-        function(err, res) {
+        ], function(err, res) {
           if (err) throw err;
           console.log("The new item has been added successfully.");
           process.exit();
@@ -158,7 +156,7 @@ exports.runApplication = function() {
           break;
         case "Add New Product":
           connection.query(
-            "SELECT DISTINCT department_name FROM products",
+            "SELECT department_name FROM departments",
             function(err, res) {
               if (err) throw err;
               var dept = res.map(function(item) {
@@ -169,4 +167,4 @@ exports.runApplication = function() {
           break;
       }
     });
-}
+};

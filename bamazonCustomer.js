@@ -41,6 +41,8 @@ function runItemOrder(arr) {
       var itemID = item.item_id;
       var itemName = item.product_name;
       var itemQuantity = item.stock_quantity;
+      var itemSales = item.product_sales;
+      var itemDept = item.department_name;
 
       inquirer.prompt([
       {
@@ -69,15 +71,30 @@ function runItemOrder(arr) {
 
               var totalCost = item.price * orderedUnits;
               var newQuantity = itemQuantity - orderedUnits;
+              var newSales = itemSales + totalCost;
 
               connection.query(
                 "UPDATE products SET ? WHERE ?",
-                [{stock_quantity: newQuantity}, {item_id: itemID}],
+                [{stock_quantity: newQuantity, product_sales: newSales}, {item_id: itemID}],
                 function(err, res) {
                   if (err) throw err;
                   console.log("Thank you for your purchase. Your total was $" + totalCost.toFixed(2) + ".");
-                  process.exit();
                 });
+
+              connection.query(
+                "SELECT department_id, total_sales FROM departments WHERE ?",
+                [{department_name: itemDept}],
+                function(err, res) {
+                  if (err) throw err;
+                  connection.query(
+                    "UPDATE departments SET ? WHERE ?",
+                    [{total_sales: res[0].total_sales + totalCost}, {department_id: res[0].department_id}],
+                    function(err, res) {
+                      if (err) throw err;
+                      process.exit();
+                    });
+                });
+
             });
         });
     });
