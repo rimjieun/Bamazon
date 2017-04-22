@@ -15,9 +15,9 @@ function viewTotalSalesByDept(arr) {
     var dept = {
       ID: d.department_id,
       Name: d.department_name,
-      "Overhead Costs": d.overhead_costs,
-      "Total Sales": d.total_sales,
-      "Total Profit": d.total_sales - d.overhead_costs
+      "Overhead Costs": d.overhead_costs.toFixed(2),
+      "Total Sales": d.total_sales.toFixed(2),
+      "Total Profit": (d.total_sales - d.overhead_costs).toFixed(2)
       };
     deptArr.push(dept);
   });
