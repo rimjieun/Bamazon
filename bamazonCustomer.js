@@ -1,15 +1,12 @@
 var inquirer = require("inquirer");
+var mysql = require("mysql");
+var Config = require("./config");
 
-exports.runInterface = function() {
-  connection.query("SELECT * FROM products", function(err, res) {
-    if (err) throw err;
-    displayProducts(res);
-    console.log("==============================================");
-    runPrompt(res);
+var connection = mysql.createConnection(Config.BAMAZON);
 
-  });
-}
-
+connection.connect(function(err) {
+  if (err) throw err;
+});
 
 function displayProducts(arr) {
   arr.forEach(function(item) {
@@ -32,6 +29,7 @@ function runPrompt(arr) {
   ]).then(function(user) {
     if (user.item_id > arr.length) {
       console.log("That Item ID does not exist!");
+      connection.end();
     }
     else {
       var item = arr[user.item_id - 1];
@@ -45,6 +43,7 @@ function runPrompt(arr) {
       ]).then(function(user) {
         if (user.item_units > item.stock_quantity) {
           console.log("Insufficient quantity!");
+          connection.end();
         }
         else {
           var orderedUnits = user.item_units;
@@ -58,7 +57,7 @@ function runPrompt(arr) {
           ]).then(function(user) {
             if (user.confirm) {
               updateStock(item, orderedUnits);
-              // resetStock(item, 50);
+              connection.end();
             }
             else {
               console.log("We're sorry you couldn't find what you needed. We hope you visit us again.");
@@ -75,17 +74,17 @@ function updateStock(obj, num) {
   var itemID = obj.item_id;
   var totalCost = obj.price * num;
   var updatedUnits = obj.stock_quantity - num;
-  connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: updatedUnits}, {item_id: itemID}], function(err, res) {
+  connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: 50}, {item_id: itemID}], function(err, res) {
     if (err) throw err;
     console.log("Thank you for your purchase. Your total was $" + totalCost.toFixed(2) + ".");
-    connection.end();
   });
 }
 
-// function resetStock(obj, num) {
-//   var itemID = obj.item_id;
-//   connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: num}, {item_id: itemID}], function(err, res) {
-//     if (err) throw err;
-//     connection.end();
-//   });
-// }
+exports.runApplication = function(){
+  connection.query("SELECT * FROM products", function(err, res) {
+    if (err) throw err;
+    displayProducts(res);
+    console.log("==============================================");
+    runPrompt(res);
+  });
+};

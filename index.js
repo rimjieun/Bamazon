@@ -1,15 +1,6 @@
 var inquirer = require("inquirer");
-
-
 var Customer = require("./bamazonCustomer");
-var Manager = require("./bamazonManager");
-var Supervisor = require("./bamazonSupervisor");
 
-var connection = mysql.createConnection(CONFIG.mySQL);
-
-connection.connect(function(err) {
-  if (err) throw err;
-});
 
 inquirer.prompt([
   {
@@ -21,6 +12,10 @@ inquirer.prompt([
 ]).then(function(user) {
   switch (user.status) {
     case "Customer":
-      Customer.runInterface(connection);
+      Customer.runApplication();
+    case "Manager":
+      // manager stuff
+    case "Supervisor":
+      //superviosr stuff
   }
 });
