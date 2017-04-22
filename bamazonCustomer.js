@@ -14,77 +14,76 @@ function displayProducts(arr) {
     console.log("Item ID: " + item.item_id);
     console.log("Name: " + item.product_name);
     console.log("Price: $" + item.price.toFixed(2));
-    console.log("In stock: " + item.stock_quantity + " units");
-    console.log("Department: " + item.department_name);
   });
 }
 
-function runPrompt(arr) {
+function runItemOrder(arr) {
   inquirer.prompt([
-    {
-      name: "item_id",
-      type: "input",
-      message: "Type the ID of the product you would like to buy:"
-    }
-  ]).then(function(user) {
-    if (user.item_id > arr.length) {
-      console.log("That Item ID does not exist!");
-      connection.end();
-    }
-    else {
-      var item = arr[user.item_id - 1];
-      var itemName = item.product_name;
-      inquirer.prompt([
-        {
-          name: "item_units",
-          type: "input",
-          message: "How many units of " + itemName + " would you like to buy?"
-        }
-      ]).then(function(user) {
-        if (user.item_units > item.stock_quantity) {
-          console.log("Insufficient quantity!");
-          connection.end();
-        }
-        else {
-          var orderedUnits = user.item_units;
-          inquirer.prompt([
-            {
-              name: "confirm",
-              type: "confirm",
-              message: "Are you sure you want to order " + orderedUnits + " units of " + itemName + "?",
-              default: true
-            }
-          ]).then(function(user) {
-            if (user.confirm) {
-              updateStock(item, orderedUnits);
-              connection.end();
-            }
-            else {
-              console.log("We're sorry you couldn't find what you needed. We hope you visit us again.");
-              connection.end();
-            }
-          });
-        }
-      });
-    }
-  });
-}
+  {
+    name: "item_id",
+    type: "input",
+    message: "Type the ID of the product you would like to buy:"
+  }
+    ]).then(function(user) {
 
-function updateStock(obj, num) {
-  var itemID = obj.item_id;
-  var totalCost = obj.price * num;
-  var updatedUnits = obj.stock_quantity - num;
-  connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: 50}, {item_id: itemID}], function(err, res) {
-    if (err) throw err;
-    console.log("Thank you for your purchase. Your total was $" + totalCost.toFixed(2) + ".");
-  });
+      if (user.item_id > arr.length) {
+        console.log("That Item ID does not exist!");
+        process.exit();
+      }
+
+      var item = arr[user.item_id - 1];
+      var itemID = item.item_id;
+      var itemName = item.product_name;
+      var itemQuantity = item.stock_quantity;
+
+      inquirer.prompt([
+      {
+        name: "item_units",
+        type: "input",
+        message: "How many units of " + itemName + " would you like to buy?"
+      }
+        ]).then(function(user) {
+          var orderedUnits = user.item_units;
+          if (orderedUnits > item.stock_quantity) {
+            console.log("Insufficient quantity!");
+            process.exit();
+          }
+          inquirer.prompt([
+          {
+            name: "confirm",
+            type: "confirm",
+            message: "Are you sure you want to order " + orderedUnits + " units of " + itemName + "?",
+            default: true
+          }
+            ]).then(function(user) {
+              if (!user.confirm) {
+                console.log("We're sorry you couldn't find what you needed. We hope you visit us again.");
+                process.exit();
+              }
+
+              var totalCost = item.price * orderedUnits;
+              var newQuantity = itemQuantity - orderedUnits;
+
+              connection.query(
+                "UPDATE products SET ? WHERE ?",
+                [{stock_quantity: newQuantity}, {item_id: itemID}],
+                function(err, res) {
+                  if (err) throw err;
+                  console.log("Thank you for your purchase. Your total was $" + totalCost.toFixed(2) + ".");
+                  process.exit();
+                });
+            });
+        });
+    });
 }
 
 exports.runApplication = function(){
-  connection.query("SELECT * FROM products", function(err, res) {
-    if (err) throw err;
-    displayProducts(res);
-    console.log("==============================================");
-    runPrompt(res);
-  });
+  connection.query(
+    "SELECT * FROM products",
+    function(err, res) {
+      if (err) throw err;
+      displayProducts(res);
+      console.log("==============================================");
+      runItemOrder(res);
+    });
 };
