@@ -94,7 +94,6 @@ function runItemOrder(arr) {
                       process.exit();
                     });
                 });
-
             });
         });
     });

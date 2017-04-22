@@ -81,7 +81,6 @@ function addToInventory(arr) {
             });
         });
     });
-
 }
 
 function addNewProduct(arr) {
