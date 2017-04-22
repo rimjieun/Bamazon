@@ -11,8 +11,12 @@ CREATE TABLE products (
     PRIMARY KEY (item_id)
 );
 
+USE Bamazon;
+
 ALTER TABLE products
 ADD product_sales decimal(10,2) DEFAULT 0;
+
+USE Bamazon;
 
 CREATE TABLE departments (
 	department_id int AUTO_INCREMENT NOT NULL,

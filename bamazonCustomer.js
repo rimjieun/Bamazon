@@ -52,7 +52,7 @@ function runItemOrder(arr) {
       }
         ]).then(function(user) {
           var orderedUnits = user.item_units;
-          if (orderedUnits > item.stock_quantity) {
+          if (orderedUnits > itemQuantity) {
             console.log("Insufficient quantity!");
             process.exit();
           }
